@@ -8,7 +8,7 @@ label {
 }
 input["text"],
 input["email"],
-input["password"] {
+input["password"],input["select"] {
   width: 400px;
   padding: 6px 14px;
   display: block;
@@ -21,6 +21,7 @@ input + label {
 
 .formControl {
   margin-bottom: 20px;
+  ;
 }
 
 .error {

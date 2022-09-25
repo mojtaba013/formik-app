@@ -1,14 +1,19 @@
 {
   "users": [
     {
-      "id":"1",
-      "name": "mojtaba kojouri",
-      "email": "kahroba013@yahoo.com",      
-      "phoneNumber": "09398516343",
-      "password": "123",
-      "passwordConfirm": "123",
-      "gender": "0"
+      "name": "aaa",
+      "email": "kahroba013@gmail.com",
+      "password": "ccc",
+      "phoneNumber": "9398516343",
+      "passwordConfirm": "ccc",
+      "gender": "0",
+      "nationality": "IR",
+      "interests": [
+        "React.js",
+        "Angular"
+      ],
+      "terms": true,
+      "id": 1
     }
-  
   ]
 }

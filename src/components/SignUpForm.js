@@ -2,6 +2,10 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
+import CheckBoxInput from "./common/CheckBoxInput";
+import Input from "./common/Input";
+import RadioInput from "./common/RadioInput";
+import SelectComponent from "./common/SelectComponent";
 const initialValues = {
   name: "",
   email: "",
@@ -9,10 +13,32 @@ const initialValues = {
   phoneNumber: "",
   passwordConfirm: "",
   gender: "",
+  nationality: "",
+  interests: [],
+  terms: false,
 };
 
 const SignUpForm = () => {
   const [formValues, setFormValues] = useState(null);
+
+  const checkBoxOptions = [
+    { label: "React.js", value: "React.js" },
+    { label: "Angular", value: "Angular" },
+  ];
+
+  const radioOptions = [
+    { label: "Male", value: "0" },
+    { label: "Female", value: "1" },
+    { label: "SheMale", value: "2" },
+  ];
+
+  const selectOptions = [
+    { label: "Select Nationality ...", value: "" },
+    { label: "Iran", value: "IR" },
+    { label: "USA", value: "US" },
+    { label: "Germany", value: "GER" },
+  ];
+
   useEffect(() => {
     axios
       .get("http://localhost:3001/users/1")
@@ -20,8 +46,12 @@ const SignUpForm = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const onSubmit = (values) => {
-    console.log("sex:", values);
+  const onSubmit = (values) => { 
+    //console.log(values); 
+    axios
+      .post("http://localhost:3001/users",values)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
   };
 
   const validationSchema = Yup.object({
@@ -34,88 +64,63 @@ const SignUpForm = () => {
       "Passwords must match"
     ),
     gender: Yup.string().required("gender is required"),
+    nationality: Yup.string().required("Please select nationality.."),
+    interests: Yup.array().min(1).required("Please select one expersist.."),
+    terms: Yup.boolean()
+      .required("The terms and conditions must be accepted.")
+      .oneOf([true], "The terms and conditions must be accepted."),
   });
 
   const formik = useFormik({
-    initialValues:formValues ||initialValues,
+    initialValues: formValues || initialValues,
     onSubmit,
     validationSchema,
     validateOnMount: true,
-    enableReinitialize:true,
+    enableReinitialize: true,
   });
-
-
 
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" name="name" {...formik.getFieldProps("name")} />
-        </div>
-        {formik.errors.name && formik.touched.name && (
-          <div className="error">{formik.errors.name}</div>
-        )}
-        <div>
-          <label>Email:</label>
-          <input type="text" name="email" {...formik.getFieldProps("email")} />
-        </div>
-        {formik.errors.email && formik.touched.email && (
-          <div className="error">{formik.errors.email}</div>
-        )}
-        <div>
-          <label>Phone Number:</label>
-          <input
-            type="text"
-            name="phoneNumber"
-            {...formik.getFieldProps("phoneNumber")}
-          />
-        </div>
-        {formik.errors.phoneNumber && formik.touched.phoneNumber && (
-          <div className="error">{formik.errors.phoneNumber}</div>
-        )}
-        <div>
-          <label>Password:</label>
-          <input
-            type="text"
-            name="password"
-            {...formik.getFieldProps("password")}
-          />
-        </div>
-        {formik.errors.password && formik.touched.password && (
-          <div className="error">{formik.errors.password}</div>
-        )}
-        <div>
-          <label>Password Confirm:</label>
-          <input
-            type="text"
-            name="passwordConfirm"
-            {...formik.getFieldProps("passwordConfirm")}
-          />
-        </div>
-        {formik.errors.passwordConfirm && formik.touched.passwordConfirm && (
-          <div className="error">{formik.errors.passwordConfirm}</div>
-        )}
-        <div className="formControl">
-          <input
-            type="radio"
-            id="0"
-            name="gender"
-            value="0"
-            onChange={formik.handleChange}
-            checked={formik.values.gender === "0"}
-          />
-          <label htmlFor="0">Male</label>
-          <input
-            type="radio"
-            id="1"
-            name="gender"
-            value="1"
-            onChange={formik.handleChange}
-            checked={formik.values.gender === "1"}
-          />
-          <label htmlFor="1">Female</label>
-        </div>
+        <Input name="name" type="text" label="Name" formik={formik} />
+        <Input name="email" type="text" label="Email" formik={formik} />
+        <Input
+          name="phoneNumber"
+          type="text"
+          label="Phone Number"
+          formik={formik}
+        />
+        <Input name="password" type="text" label="Password" formik={formik} />
+        <Input
+          name="passwordConfirm"
+          type="text"
+          label="ConfirmPassword"
+          formik={formik}
+        />
+
+        <RadioInput formik={formik} radioOptions={radioOptions} name="gender" />
+
+        <SelectComponent
+          selectOptions={selectOptions}
+          formik={formik}
+          name="nationality"
+        />
+
+        <CheckBoxInput
+          formik={formik}
+          chechBoxOptions={checkBoxOptions}
+          name="interests"
+        />
+        <input
+          type="checkBox"
+          id="terms"
+          name="terms"
+          value={true}
+          onChange={formik.handleChange}
+          checked={formik.values.terms}
+        />
+        <label htmlFor="terms">Terms and conditions</label>
+
         <button type="submit" disabled={!formik.isValid}>
           submit
         </button>
